@@ -15,29 +15,39 @@ app.get('/posts', (req, res) => {
 });
 
 app.post('/posts', async (req, res) => {
-    const id = randomBytes(4).toString('hex');
-    const { title } = req.body;
+    try {
+        const id = randomBytes(4).toString('hex');
+        const { title } = req.body;
 
-    posts[id] = {
-        id, title
-    };
-
-    await axios.post('http://localhost:4005/events', {
-        type: 'PostCreated',
-        data: {
+        posts[id] = {
             id, title
-        }
-    })
+        };
 
-    res.status(201).json(posts[id]);
+        await axios.post('http://localhost:4005/events', {
+            type: 'PostCreated',
+            data: {
+                id, title
+            }
+        })
+
+        res.status(201).json(posts[id]);
+    } catch (error) {
+        console.log('Error in posts index post method');
+        res.send({});
+    }
 });
 
 
 
 app.post('/events', (req, res) => {
-    console.log('Received Event', req.body.type);
+    try {
+        console.log('Received Event', req.body.type);
 
-    res.send({});
+        res.send({});
+    } catch (error) {
+        console.log('error in posts post events');
+        res.send({});
+    }
 })
 
 app.listen(4000, () => {
