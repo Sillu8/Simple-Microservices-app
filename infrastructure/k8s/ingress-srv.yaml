@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: 
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  #all the routing rules we want to apply for the ingress controller
+    - host: posts.com
+      http:
+        paths:
+          - path: /posts
+            pathType: Prefix
+            backend:
+              service:
+              #connect with cluster ip of posts service
+                name: posts-clusterip-srv
+                port:
+                  number: 4000
+
+#since the posts.com is changed in /etc/hosts browser will not go to the posts.com 
+#instead ingress-nginx will take the request and redirect it to the appropriate service
+#based on the service given in backend by path and that service will redirect it to the pod                  
