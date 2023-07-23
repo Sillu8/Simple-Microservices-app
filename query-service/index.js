@@ -36,12 +36,14 @@ const handleEvent = (type, data) => {
 }
 
 app.get('/posts', (req, res) => {
+    console.log(posts)
     res.send(posts);
 });
 
 app.post('/events', (req, res) => {
     try {
         const { type, data } = req.body;
+        console.log(type)
 
         handleEvent(type, data);
 
@@ -64,5 +66,6 @@ app.listen(4002, async () => {
         }
     } catch (error) {
         console.log(error);
+        res.send({error:'Error in query service'})
     }
 });

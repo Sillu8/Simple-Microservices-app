@@ -1,0 +1,73 @@
+apiVersion: skaffold/v4beta6
+kind: Config
+
+  #telling skaffold that there is a collection of config files inside k8s directory.
+  #telling skaffold to watch all these yaml files. When any change is made in this yaml skaffold will automatically reapply
+  #does 3 things:
+  #when we startup skaffold, apply the config files
+  #apply on change
+  #delete the object on stopping skaffold
+manifests:
+  rawYaml:
+    - ./infrastructure/k8s/*
+#by default whenever skaffold makes a change in our images or rebuild it, it will try to push it to docker hub
+#that isn't required, so disabling it.
+build:
+  local:
+    push: false
+  #tells skaffold something inside our project that it needs to maintain
+  artifacts:
+    - image: shamilrasheed/client
+      #tells there is a pod that is running code based on the client dir in our project
+      #when a change is made in the directory, skaffold will try to update the pod
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+      #make changes in 2 ways:
+      #if a js file is changed, skaffold will directly take the js file and replace it in the pod
+      #if we make any change that is apart from what we mentioned in the manual src and dest, skaffold will 
+      #rebuild the entire image (like having a change in the package.json).
+        manual:
+          - src: 'src/**/*.jsx'
+            dest: .  
+    - image: shamilrasheed/comments
+      context: comments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .          
+    - image: shamilrasheed/event-bus
+      context: event-bus
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .          
+    - image: shamilrasheed/moderation
+      context: moderation-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .  
+    - image: shamilrasheed/posts
+      context: posts
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .          
+    - image: shamilrasheed/query-service
+      context: query-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '*.js'
+            dest: .  
